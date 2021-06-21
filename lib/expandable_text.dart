@@ -115,7 +115,7 @@ class ExpandableTextState extends State<ExpandableText> {
           style: effectiveTextStyle,
           children: <TextSpan>[
             if (_expanded) TextSpan(
-              text: ' ',
+              text: '',
             ),
             TextSpan(
               text: linkText,
@@ -203,7 +203,7 @@ class ExpandableTextState extends State<ExpandableText> {
               textScaleFactor: textScaleFactor,
               overflow: TextOverflow.clip,
             ),
-            
+            textPainter.didExceedMaxLines ?
             RichText(
               text: link,
               softWrap: true,
@@ -211,7 +211,7 @@ class ExpandableTextState extends State<ExpandableText> {
               textAlign: textAlign,
               textScaleFactor: textScaleFactor,
               overflow: TextOverflow.clip,
-            ),
+            ) : SizedBox.shrink(),
           ],
         );
       },
