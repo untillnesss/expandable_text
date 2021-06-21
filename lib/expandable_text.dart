@@ -106,7 +106,8 @@ class ExpandableTextState extends State<ExpandableText> {
     final link = TextSpan(
       children: [
         if (!_expanded) TextSpan(
-          text: '\u2026 ',
+          // text: '\u2026 ',
+          text: '',
           style: widget.linkEllipsis ? linkTextStyle : effectiveTextStyle,
           recognizer: widget.linkEllipsis ? _linkTapGestureRecognizer : null,
         ),
@@ -184,20 +185,34 @@ class ExpandableTextState extends State<ExpandableText> {
                     ? widget.text
                     : widget.text.substring(0, max(endOffset, 0)),
               ),
-              link,
+              // link,
             ],
           );
         } else {
           textSpan = text;
         }
 
-        return RichText(
-          text: textSpan,
-          softWrap: true,
-          textDirection: textDirection,
-          textAlign: textAlign,
-          textScaleFactor: textScaleFactor,
-          overflow: TextOverflow.clip,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text: textSpan,
+              softWrap: true,
+              textDirection: textDirection,
+              textAlign: textAlign,
+              textScaleFactor: textScaleFactor,
+              overflow: TextOverflow.clip,
+            ),
+            
+            RichText(
+              text: link,
+              softWrap: true,
+              textDirection: textDirection,
+              textAlign: textAlign,
+              textScaleFactor: textScaleFactor,
+              overflow: TextOverflow.clip,
+            ),
+          ],
         );
       },
     );
