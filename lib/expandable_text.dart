@@ -24,7 +24,7 @@ class ExpandableText extends StatefulWidget {
     this.textAlign,
     this.textScaleFactor,
     this.maxLines = 2,
-    this.semanticsLabel,
+    this.semanticsLabel, this.spacing,
   }) : assert(text != null),
        assert(expandText != null),
        assert(expanded != null),
@@ -49,6 +49,7 @@ class ExpandableText extends StatefulWidget {
   final double textScaleFactor;
   final int maxLines;
   final String semanticsLabel;
+  final Widget spacing;
 
   @override
   ExpandableTextState createState() => ExpandableTextState();
@@ -203,6 +204,7 @@ class ExpandableTextState extends State<ExpandableText> {
               textScaleFactor: textScaleFactor,
               overflow: TextOverflow.clip,
             ),
+            this.widget.spacing ?? SizedBox.shrink(),
             textPainter.didExceedMaxLines ?
             RichText(
               text: link,
