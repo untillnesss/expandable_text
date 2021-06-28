@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 class ExpandableText extends StatefulWidget {
   const ExpandableText(
     this.text, {
-    Key key,
-    @required this.expandText,
+    Key? key,
+    required this.expandText,
     this.collapseText,
     this.expanded = false,
     this.onExpandedChanged,
@@ -34,22 +34,22 @@ class ExpandableText extends StatefulWidget {
 
   final String text;
   final String expandText;
-  final String collapseText;
+  final String? collapseText;
   final bool expanded;
-  final ValueChanged<bool> onExpandedChanged;
-  final Color linkColor;
+  final ValueChanged<bool>? onExpandedChanged;
+  final Color? linkColor;
   final bool linkEllipsis;
-  final TextStyle linkStyle;
-  final String prefixText;
-  final TextStyle prefixStyle;
-  final VoidCallback onPrefixTap;
-  final TextStyle style;
-  final TextDirection textDirection;
-  final TextAlign textAlign;
-  final double textScaleFactor;
+  final TextStyle? linkStyle;
+  final String? prefixText;
+  final TextStyle? prefixStyle;
+  final VoidCallback? onPrefixTap;
+  final TextStyle? style;
+  final TextDirection? textDirection;
+  final TextAlign? textAlign;
+  final double? textScaleFactor;
   final int maxLines;
-  final String semanticsLabel;
-  final Widget spacing;
+  final String? semanticsLabel;
+  final Widget? spacing;
 
   @override
   ExpandableTextState createState() => ExpandableTextState();
@@ -57,8 +57,8 @@ class ExpandableText extends StatefulWidget {
 
 class ExpandableTextState extends State<ExpandableText> {
   bool _expanded = false;
-  TapGestureRecognizer _linkTapGestureRecognizer;
-  TapGestureRecognizer _prefixTapGestureRecognizer;
+  TapGestureRecognizer? _linkTapGestureRecognizer;
+  TapGestureRecognizer? _prefixTapGestureRecognizer;
 
   @override
   void initState() {
@@ -73,8 +73,8 @@ class ExpandableTextState extends State<ExpandableText> {
 
   @override
   void dispose() {
-    _linkTapGestureRecognizer.dispose();
-    _prefixTapGestureRecognizer.dispose();
+    _linkTapGestureRecognizer!.dispose();
+    _prefixTapGestureRecognizer!.dispose();
     super.dispose();
   }
 
@@ -93,16 +93,16 @@ class ExpandableTextState extends State<ExpandableText> {
   @override
   Widget build(BuildContext context) {
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
-    TextStyle effectiveTextStyle = widget.style;
-    if (widget.style == null || widget.style.inherit) {
+    TextStyle? effectiveTextStyle = widget.style;
+    if (widget.style == null || widget.style!.inherit) {
       effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
     }
 
     final linkText = (_expanded ? widget.collapseText : widget.expandText) ?? '';
     final linkColor = widget.linkColor ?? widget.linkStyle?.color ?? Theme.of(context).accentColor;
-    final linkTextStyle = effectiveTextStyle.merge(widget.linkStyle).copyWith(color: linkColor);
+    final linkTextStyle = effectiveTextStyle!.merge(widget.linkStyle).copyWith(color: linkColor);
 
-    final prefixText = widget.prefixText != null && widget.prefixText.isNotEmpty ? '${widget.prefixText} ' : '';
+    final prefixText = widget.prefixText != null && widget.prefixText!.isNotEmpty ? '${widget.prefixText} ' : '';
 
     final link = TextSpan(
       children: [
@@ -152,7 +152,7 @@ class ExpandableTextState extends State<ExpandableText> {
         final textAlign = widget.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
         final textDirection = widget.textDirection ?? Directionality.of(context);
         final textScaleFactor = widget.textScaleFactor ?? MediaQuery.textScaleFactorOf(context);
-        final locale = Localizations.localeOf(context, nullOk: true);
+        final locale = Localizations.localeOf(context);
 
         TextPainter textPainter = TextPainter(
           text: link,
@@ -175,7 +175,7 @@ class ExpandableTextState extends State<ExpandableText> {
             textSize.width - linkSize.width,
             textSize.height,
           ));
-          final endOffset = textPainter.getOffsetBefore(position.offset) - prefixText.length;
+          final endOffset = textPainter.getOffsetBefore(position.offset)! - prefixText.length;
 
           textSpan = TextSpan(
             style: effectiveTextStyle,
