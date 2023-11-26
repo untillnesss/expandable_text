@@ -24,13 +24,10 @@ class ExpandableText extends StatefulWidget {
     this.textAlign,
     this.textScaleFactor,
     this.maxLines = 2,
-    this.semanticsLabel, this.spacing,
-  }) : assert(text != null),
-       assert(expandText != null),
-       assert(expanded != null),
-       assert(linkEllipsis != null),
-       assert(maxLines != null && maxLines > 0),
-       super(key: key);
+    this.semanticsLabel,
+    this.spacing,
+  })  : assert(maxLines > 0),
+        super(key: key);
 
   final String text;
   final String expandText;
@@ -46,7 +43,7 @@ class ExpandableText extends StatefulWidget {
   final TextStyle? style;
   final TextDirection? textDirection;
   final TextAlign? textAlign;
-  final double? textScaleFactor;
+  final TextScaler? textScaleFactor;
   final int maxLines;
   final String? semanticsLabel;
   final Widget? spacing;
@@ -65,10 +62,8 @@ class ExpandableTextState extends State<ExpandableText> {
     super.initState();
 
     _expanded = widget.expanded;
-    _linkTapGestureRecognizer = TapGestureRecognizer()
-      ..onTap = _toggleExpanded;
-    _prefixTapGestureRecognizer = TapGestureRecognizer()
-      ..onTap = _prefixTapped;
+    _linkTapGestureRecognizer = TapGestureRecognizer()..onTap = _toggleExpanded;
+    _prefixTapGestureRecognizer = TapGestureRecognizer()..onTap = _prefixTapped;
   }
 
   @override
@@ -98,33 +93,43 @@ class ExpandableTextState extends State<ExpandableText> {
       effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
     }
 
-    final linkText = (_expanded ? widget.collapseText : widget.expandText) ?? '';
-    final linkColor = widget.linkColor ?? widget.linkStyle?.color ?? Theme.of(context).accentColor;
-    final linkTextStyle = effectiveTextStyle!.merge(widget.linkStyle).copyWith(color: linkColor);
+    final linkText =
+        (_expanded ? widget.collapseText : widget.expandText) ?? '';
+    final linkColor = widget.linkColor ??
+        widget.linkStyle?.color ??
+        Theme.of(context).colorScheme.surface;
+    final linkTextStyle =
+        effectiveTextStyle!.merge(widget.linkStyle).copyWith(color: linkColor);
 
-    final prefixText = widget.prefixText != null && widget.prefixText!.isNotEmpty ? '${widget.prefixText} ' : '';
+    final prefixText =
+        widget.prefixText != null && widget.prefixText!.isNotEmpty
+            ? '${widget.prefixText} '
+            : '';
 
     final link = TextSpan(
       children: [
-        if (!_expanded) TextSpan(
-          // text: '\u2026 ',
-          text: '',
-          style: widget.linkEllipsis ? linkTextStyle : effectiveTextStyle,
-          recognizer: widget.linkEllipsis ? _linkTapGestureRecognizer : null,
-        ),
-        if (linkText.length > 0) TextSpan(
-          style: effectiveTextStyle,
-          children: <TextSpan>[
-            if (_expanded) TextSpan(
-              text: '',
-            ),
-            TextSpan(
-              text: linkText,
-              style: linkTextStyle,
-              recognizer: _linkTapGestureRecognizer,
-            ),
-          ],
-        ),
+        if (!_expanded)
+          TextSpan(
+            // text: '\u2026 ',
+            text: '',
+            style: widget.linkEllipsis ? linkTextStyle : effectiveTextStyle,
+            recognizer: widget.linkEllipsis ? _linkTapGestureRecognizer : null,
+          ),
+        if (linkText.length > 0)
+          TextSpan(
+            style: effectiveTextStyle,
+            children: <TextSpan>[
+              if (_expanded)
+                TextSpan(
+                  text: '',
+                ),
+              TextSpan(
+                text: linkText,
+                style: linkTextStyle,
+                recognizer: _linkTapGestureRecognizer,
+              ),
+            ],
+          ),
       ],
     );
 
@@ -149,16 +154,19 @@ class ExpandableTextState extends State<ExpandableText> {
         assert(constraints.hasBoundedWidth);
         final double maxWidth = constraints.maxWidth;
 
-        final textAlign = widget.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
-        final textDirection = widget.textDirection ?? Directionality.of(context);
-        final textScaleFactor = widget.textScaleFactor ?? MediaQuery.textScaleFactorOf(context);
+        final textAlign =
+            widget.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
+        final textDirection =
+            widget.textDirection ?? Directionality.of(context);
+        TextScaler textScaleFactor =
+            widget.textScaleFactor ?? MediaQuery.textScalerOf(context);
         final locale = Localizations.localeOf(context);
 
         TextPainter textPainter = TextPainter(
           text: link,
           textAlign: textAlign,
           textDirection: textDirection,
-          textScaleFactor: textScaleFactor,
+          textScaler: textScaleFactor,
           maxLines: widget.maxLines,
           locale: locale,
         );
@@ -175,7 +183,8 @@ class ExpandableTextState extends State<ExpandableText> {
             textSize.width - linkSize.width,
             textSize.height,
           ));
-          final endOffset = textPainter.getOffsetBefore(position.offset)! - prefixText.length;
+          final endOffset =
+              textPainter.getOffsetBefore(position.offset)! - prefixText.length;
 
           textSpan = TextSpan(
             style: effectiveTextStyle,
@@ -201,19 +210,20 @@ class ExpandableTextState extends State<ExpandableText> {
               softWrap: true,
               textDirection: textDirection,
               textAlign: textAlign,
-              textScaleFactor: textScaleFactor,
               overflow: TextOverflow.clip,
+              textScaler: textScaleFactor,
             ),
             this.widget.spacing ?? SizedBox.shrink(),
-            textPainter.didExceedMaxLines ?
-            RichText(
-              text: link,
-              softWrap: true,
-              textDirection: textDirection,
-              textAlign: textAlign,
-              textScaleFactor: textScaleFactor,
-              overflow: TextOverflow.clip,
-            ) : SizedBox.shrink(),
+            textPainter.didExceedMaxLines
+                ? RichText(
+                    text: link,
+                    softWrap: true,
+                    textDirection: textDirection,
+                    textAlign: textAlign,
+                    overflow: TextOverflow.clip,
+                    textScaler: textScaleFactor,
+                  )
+                : SizedBox.shrink(),
           ],
         );
       },
